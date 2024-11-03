@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for AJAX requests -->
+</head>
+<body class="bg-gray-100 font-serif">
+    <header x-data="{ open: false }" class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="{% url 'product_list' %}" class="text-lg sm:text-xl md:text-2xl font-bold text-orange-500 text-gray-800">GetYourProduct</a>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{% url 'product_list' %}" class="text-gray-600 hover:text-gray-800">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">Categories</a>
+                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-gray-800">About</a>
+                    <a href="{% url 'order_history' %}" class="text-gray-600 hover:text-gray-800">Order</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <form method="get" action="{% url 'product_list' %}" class="hidden md:block">
+                        <input type="text" name="query" value="{{ query }}" placeholder="Search for products..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Search</button>
+                    </form>
+    
+                    <a href="{% url 'cart_detail' %}" class="text-gray-600 hover:text-gray-800 relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">{{ cart_item_count }}</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                        <span class="text-gray-600">Hello, <a href="{% url 'profile_view' %}">{{ user.username }}!</a></span>
+                        <div class="relative md:hidden">
+                            <button @click="open = !open" class="text-gray-600 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                                </svg>
+                            </button>
+                        </div>
+                        <a href="{% url 'logout' %}" class="hidden md:flex space-x-6 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="hidden md:flex space-x-6 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    
+        <!-- Mobile Menu -->
+        <div x-show="open" class="md:hidden bg-gray-50 border-t border-gray-200">
+            <nav class="space-y-4 p-4">
+                <a href="{% url 'product_list' %}" class="block text-gray-600 hover:text-gray-800">Home</a>
+                <a href="{% url 'about' %}" class="block text-gray-600 hover:text-gray-800">About</a>
+                <a href="#" class="block text-gray-600 hover:text-gray-800">Contact</a>
+                <form method='get' action="{% url 'product_list' %}" class="mt-2 mb-6">
+                    <input type="text" name="query" value="{{ query }}" placeholder="Search for products..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </form>
+                {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-300">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300">Login</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-6 py-8 flex-grow">
+        <div class="bg-white rounded-md shadow-lg overflow-hidden">
+            <div class="md:flex">
+                <!-- Product Image (Left Side) -->
+                <div class="md:w-1/2">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-200 h-150 object-cover">
+                  </div>
+
+                <!-- Product Details (Right Side) -->
+                <div class="md:w-1/2 p-6">
+                    <h2 class="text-3xl font-bold text-gray-800">{{ product.name }}</h2>
+                    <p class="text-gray-600 mt-2">{{ product.description|safe }}</p>
+                    <p class="text-2xl font-semibold text-green-500 mt-4">${{ product.price }}</p>
+
+                    <!-- Add to Cart Form -->
+                    <form action="{% url 'add_to_cart' %}" method="post" class="mt-6">
+                        {% csrf_token %}
+                        <div class="flex items-center">
+                            <label for="quantity" class="text-gray-700 mr-2">Quantity:</label>
+                            <input type="number" name="quantity" id="quantity" value="1" min="1" class="border rounded p-2 w-16 text-center">
+                        </div>
+
+                        <div class="product-actions">
+                            <form method="post" action="{% url 'add_to_cart' %}">
+                              {% csrf_token %}
+                              <input type="hidden" name="product_id" value="{{ product.id }}">
+                              <button type="submit" class="inline-block mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">Add to Cart</button>
+                            </form>
+                          
+                            <a href="{% url 'add_review' product.id %}" class="inline-block mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">Add a Review</a>
+                          </div>
+                        
+                        {% comment %} <form method="post" action="{% url 'add_to_cart' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button type="submit" class="mt-4 w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                                Add to Cart
+                            </button>
+                        </form>
+                    </form>
+                    <a href="{% url 'add_review' product.id %}" class="inline-block mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                        Add a Review
+                    </a> {% endcomment %}
+                    <div class="mt-8">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Customer Reviews</h2>
+                        <div class="space-y-4">
+                            {% for review in reviews %}
+                                <div class="bg-gray-50 rounded-lg p-4 shadow">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <p class="font-semibold text-gray-700">{{ review.user.username }}</p>
+                                        <div class="flex items-center">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                    </svg>
+                                                {% else %}
+                                                    <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                    </svg>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-600">{{ review.comment }}</p>
+                                    <p class="text-sm text-gray-500 mt-2">{{ review.created_at|date:"F j, Y" }}</p>
+                                </div>
+                            {% empty %}
+                                <p class="text-gray-600 italic">No reviews yet. Be the first to review!</p>
+                            {% endfor %}
+                        </div>
+                       
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                    <p class="text-gray-400">ClassicShop is your trusted destination for timeless products. We offer a curated selection of high-quality items that never go out of style.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Products</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <p class="text-gray-400">123 Classic Street<br />Timeless Town, TT 12345<br />Phone: (123) 456-7890<br />Email: info@classicshop.com</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+                © {{ now|date:"Y" }} ClassicShop. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

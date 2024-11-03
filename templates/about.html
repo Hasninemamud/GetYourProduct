@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classic E-commerce - Product List</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for AJAX requests -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        'eco-green': '#4CAF50',
+                        'eco-blue': '#2196F3',
+                    },
+                },
+            },
+        }
+    </script>
+    
+</head>
+<body class="bg-gray-100 font-serif">
+    <header x-data="{ open: false }" class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="{% url 'product_list' %}" class="text-2xl text-orange-500 font-bold text-gray-800">GetYourProduct</a>
+                <div class="md:hidden">
+                    <button @click="open = !open" class="text-gray-600 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{% url 'product_list' %}" class="text-gray-600 hover:text-gray-800">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">Categories</a>
+                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-gray-800">About</a>
+                    <a href="{% url "order_history" %}" class="text-gray-600 hover:text-gray-800">Order</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                  <form method="get" action="{% url 'product_list' %}" class="hidden md:block">
+                    <input type="text" name="query" value="{{ query }}" placeholder="Search for products..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Search</button>
+                </form>
+                
+                    <a href="{% url 'cart_detail' %}" class="text-gray-600 hover:text-gray-800 relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">{{ cart_item_count }}</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                        <span class="text-gray-600">Hello, <a href="{% url 'profile_view' %}">{{ user.username }}!</a></span>
+                        <a href="{% url 'logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300">Login</a>
+                    {% endif %} 
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="open" class="md:hidden bg-gray-50 border-t border-gray-200">
+            <nav class="space-y-4 p-4">
+                <a href="#" class="block text-gray-600 hover:text-gray-800">Home</a>
+                <a href="#" class="block text-gray-600 hover:text-gray-800">Categories</a>
+                <a href="{% url 'about' %}" class="block text-gray-600 hover:text-gray-800">About</a>
+                <a href="#" class="block text-gray-600 hover:text-gray-800">Contact</a>
+                <form method='get' action="{% url 'product_list' %}" class="mt-2 mb-2">
+                  <input type="text" name="query" value="{{ query }}" placeholder="Search for products..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </form>
+               
+              </nav>
+        </div>
+    </header>
+    <main>
+        <section class="relative bg-eco-green py-20 overflow-hidden">
+            <div class="container mx-auto px-6">
+                <h1 class="text-5xl md:text-6xl font-bold text-center mb-12 text-white">Our Story</h1>
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="md:w-1/2 ml-[15%] mb-8 md:mb-0">
+                        <p class="text-lg text-white leading-relaxed mb-6">
+                            EcoVibe Shop was founded in 2015 with a simple goal: to make sustainable living accessible and stylish. 
+                            We've grown from a small online store into a thriving community of eco-conscious individuals and brands.
+                        </p>
+                        <p class="text-lg text-white leading-relaxed">
+                            Our mission is to provide high-quality, environmentally friendly products that help reduce your carbon footprint. 
+                            We carefully curate our selection, ensuring each item meets our strict standards for sustainability and quality.
+                        </p>
+                    </div>
+                    <div class="md:w-1/2 relative ml-8">
+                        <img src="/media/e-commerce poster type image.png" alt="EcoVibe Shop Team" class="rounded-lg w-68 h-80 object-cover shadow-xl">
+                    </div>
+                </div>
+            </div>
+            <div class="absolute top-0 left-0 w-full h-full bg-eco-green opacity-5 transform -skew-y-6"></div>
+        </section>
+
+        <section class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Our Values</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-md transform hover:scale-105 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-eco-green mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2">Sustainability</h3>
+                        <p class="text-gray-600">We're committed to reducing our environmental impact and promoting sustainable practices in everything we do.</p>
+                    </div>
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-md transform hover:scale-105 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-eco-blue mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2">Community</h3>
+                        <p class="text-gray-600">We foster a community of like-minded individuals who are passionate about making a positive impact on the planet.</p>
+                    </div>
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-md transform hover:scale-105 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-eco-green mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2">Quality</h3>
+                        <p class="text-gray-600">We never compromise on quality, ensuring that our eco-friendly products are both effective and long-lasting.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 bg-eco-green text-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-12">Our Impact</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div>
+                        <span class="text-5xl font-bold">500K+</span>
+                        <p class="mt-2 text-xl">Plastic Bottles Saved</p>
+                    </div>
+                    <div>
+                        <span class="text-5xl font-bold">10K+</span>
+                        <p class="mt-2 text-xl">Trees Planted</p>
+                    </div>
+                    <div>
+                        <span class="text-5xl font-bold">100K+</span>
+                        <p class="mt-2 text-xl">Happy Customers</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Meet Our Team</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <img src="/placeholder.svg?height=200&width=200" alt="Jane Doe" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold mb-2">Jane Doe</h3>
+                        <p class="text-gray-600">Founder & CEO</p>
+                    </div>
+                    <div class="text-center">
+                        <img src="/placeholder.svg?height=200&width=200" alt="John Smith" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold mb-2">John Smith</h3>
+                        <p class="text-gray-600">Head of Sustainability</p>
+                    </div>
+                    <div class="text-center">
+                        <img src="/placeholder.svg?height=200&width=200" alt="Emily Brown" class="w-40 h-40 rounded-full mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold mb-2">Emily Brown</h3>
+                        <p class="text-gray-600">Customer Experience Manager</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 bg-gray-100">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-8 text-gray-800">Join Our Eco-Friendly Journey</h2>
+                <p class="text-xl text-gray-600 mb-8">Subscribe to our newsletter for eco-tips, exclusive deals, and updates on our latest sustainable products.</p>
+                <form class="max-w-md mx-auto">
+                    <div class="flex items-center border-b-2 border-eco-green py-2">
+                        <input class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="email" placeholder="Enter your email" aria-label="Email">
+                        <button class="flex-shrink-0 bg-eco-green hover:bg-green-700 border-eco-green hover:border-green-700 text-sm border-4 text-white py-1 px-2 rounded" type="button">
+                            Subscribe
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                    <p class="text-gray-400">ClassicShop is your trusted destination for timeless products. We offer a curated selection of high-quality items that never go out of style.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Products</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <p class="text-gray-400">123 Classic Street<br />Timeless Town, TT 12345<br />Phone: (123) 456-7890<br />Email: info@classicshop.com</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+                © {{ now|date:"Y" }} ClassicShop. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
