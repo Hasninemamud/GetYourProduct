@@ -17,6 +17,7 @@
 - **Search Functionality**: Quickly find specific items with an intuitive search bar.
 - **User Accounts**: Secure user login and registration system.
 - **Cart & Checkout**: Add items to the cart and proceed with a simple checkout process.
+- **Review**: User can review the product 
 - **Order History & Product Tracking**: Check user order history and the user can track the product.
 - **Admin Panel**: Manage products, categories, and orders with an easy-to-use admin interface.
 
