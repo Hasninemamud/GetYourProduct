@@ -70,12 +70,16 @@
  ![Registration Page](media/screenshot/127.0.0.1_8000_register_.png)
  4. Cart
  ![Cart](media/screenshot/127.0.0.1_8000_cart_.png)
- 5. Order History
+ 5. Product Details
+ ![Product Details](media/screenshot/127.0.0.1_8000_product_4_.png)
+ 6. Product Review
+ ![Product Review](media/screenshot/127.0.0.1_8000_product_4_add_review_.png)
+ 7. Order History
  ![Order History](media/screenshot/127.0.0.1_8000_order_history_.png)
- 6. Order Confirm
+ 8. Order Confirm
  ![Order Confirm](media/screenshot/127.0.0.1_8000_order_place_.png)
- 7. About
+ 9. About
  ![About](media/screenshot/127.0.0.1_8000_about_.png)
- 8. User Profile
+ 10. User Profile
  ![Profile Page](media/screenshot/127.0.0.1_8000_profile_.png)
 
