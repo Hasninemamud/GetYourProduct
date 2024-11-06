@@ -30,7 +30,7 @@
 ## Technologies
 - **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Django
-- **Database**: MongoDB
+- **Database**: SQLite
 - **Rich Text Editor**: CKEditor
 
 
