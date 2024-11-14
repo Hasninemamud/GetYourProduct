@@ -83,5 +83,5 @@
  10. User Profile
  ![Profile Page](media/screenshot/127.0.0.1_8000_profile_.png)
  11. Customer Support Chatbot
- ![Profile Page](media/screenshot/127.0.0.1_8000_(1).png)
+ ![Customer Support Chatbot](media/screenshot/127.0.0.1_8000_1.png)
 
