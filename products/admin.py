@@ -20,7 +20,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = []
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['category']
+    list_display = ['name']
 
 # Order Admin
 class OrderAdmin(admin.ModelAdmin):
@@ -59,7 +59,8 @@ admin.site.register(User, CustomUserAdmin)
 # Register other models with their custom admins
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
+
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem, CartItemAdmin)
