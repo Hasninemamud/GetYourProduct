@@ -58,24 +58,33 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-from ckeditor.fields import RichTextField
+    
+    
+from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
+
 class Product(models.Model):
-    # existing fields
     name = models.CharField(max_length=200)
-    description = RichTextField()
+    description = CKEditor5Field('Text', config_name='default')  # Use CKEditor5Field instead of CKEditor5Widget
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='product_images/')
     stock = models.IntegerField(default=0)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="products")
-
+    category = models.ForeignKey(
+        'Category', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name="products"
+    )
+    
     def average_rating(self):
         reviews = self.reviews.all()
         if reviews.exists():
             return sum(review.rating for review in reviews) / reviews.count()
         return 0
-
+    
     def __str__(self):
         return self.name
+
 
 
 from django.db import models
