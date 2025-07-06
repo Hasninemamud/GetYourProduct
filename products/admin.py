@@ -14,7 +14,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 # Product Admin
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'stock', ]
+    list_display = ('name', 'price', 'stock', 'category')
     list_filter = []
     search_fields = ['name', 'description']
     ordering = []
