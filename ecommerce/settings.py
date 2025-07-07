@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'cloudinary',
     'cloudinary_storage',
-    'django.contrib.staticfiles',
 ]
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
