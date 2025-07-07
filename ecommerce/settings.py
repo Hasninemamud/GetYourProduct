@@ -24,7 +24,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'products',
     'django_ckeditor_5',
+    'cloudinary',
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
 ]
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dop3czfyu',
+    'API_KEY': '595436274766998',
+    'API_SECRET': '_uy60TIa2WrgDx-NdWVDK-XQ_m8',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

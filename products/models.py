@@ -67,7 +67,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = CKEditor5Field('Text', config_name='default')  # Use CKEditor5Field instead of CKEditor5Widget
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='product_images/')
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     stock = models.IntegerField(default=0)
     category = models.ForeignKey(
         'Category', 
